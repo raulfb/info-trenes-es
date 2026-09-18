@@ -477,6 +477,17 @@ function sendBoardData(data) {
 
 // 5-minute stale threshold
 const STALE_MS = 5 * 60 * 1000
+// Si ADIF no envía datos en este tiempo, damos por hecho que la estación no tiene pantalla
+const NO_DATA_TIMEOUT_MS = 10_000
+let noDataTimer = null
+
+function startNoDataTimer() {
+  clearTimeout(noDataTimer)
+  noDataTimer = setTimeout(() => {
+    if (status.value === 'connecting') status.value = 'no-data'
+  }, NO_DATA_TIMEOUT_MS)
+}
+
 const RETRY_DELAYS_MS = [3_000, 6_000]
 let retryTimer = null
 let retryAttempt = 0
@@ -554,6 +565,7 @@ function handleIncoming(raw) {
 
     lastReceivedAt = Date.now()
     status.value = 'connected'
+    clearTimeout(noDataTimer)
     cancelRetries()
 
     // Prevent recursive calls by checking if we're already processing the same data
@@ -623,6 +635,7 @@ onMounted(async () => {
     await connection.start()
     await connection.invoke('JoinInfo', connectionStationCode.value)
     await connection.invoke('GetLastMessage', connectionStationCode.value)
+    if (props.stationCode) startNoDataTimer()
 
     healthCheckTimer = setInterval(checkHealth, 60_000)
   } catch (err) {
@@ -638,6 +651,7 @@ watch(
     if (!connection || !props.stationCode) return
 
     cancelRetries()
+    clearTimeout(noDataTimer)
     clearBoardData()
     status.value = 'connecting'
     isChangingStation = true
@@ -646,6 +660,7 @@ watch(
       await connection.start()
       await connection.invoke('JoinInfo', connectionStationCode.value)
       await connection.invoke('GetLastMessage', connectionStationCode.value)
+      startNoDataTimer()
     } catch (err) {
       console.error('[SignalR] Failed to change station:', err)
       clearBoardData()
@@ -683,6 +698,7 @@ watch(
 
 onBeforeUnmount(() => {
   clearInterval(healthCheckTimer)
+  clearTimeout(noDataTimer)
   clearTimeout(rowsReadTimer)
   boardResizeObserver?.disconnect()
   healthCheckTimer = null
@@ -699,13 +715,14 @@ onBeforeUnmount(() => {
       <div class="loader-content">
         <Logo class="loader-logo" />
         <span class="loader-text" v-if="props.stationCode && status === 'error'">No se han podido cargar los datos de ADIF</span>
+        <span class="loader-text" v-else-if="props.stationCode && status === 'no-data'">Esta estación no tiene pantalla disponible</span>
         <span class="loader-text" v-else-if="props.stationCode && status === 'reconnecting'">Reconectando con ADIF…</span>
         <span class="loader-text" v-else-if="props.stationCode">Cargando datos de ADIF…</span>
       </div>
     </div>
     <iframe
       ref="board"
-      v-if="status !== 'error'"
+      v-if="status !== 'error' && status !== 'no-data'"
       :key="iframeKey"
       :src="iframeSrc"
       @load="handleBoardLoad"

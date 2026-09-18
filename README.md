@@ -23,7 +23,7 @@ Solo funcionan las estaciones gestionadas por ADIF que tienen el nuevo sistema d
 ## 🗺️ Hoja de ruta
 
 - [x] Mostrar solo estaciones españolas en el buscador principal
-- [ ] Mensaje claro cuando una estación no tiene pantalla disponible
+- [x] Mensaje claro cuando una estación no tiene pantalla disponible
 - [ ] Corregir erratas en el listado de estaciones
 - [ ] Estaciones favoritas y recientes
 - [ ] Sugerir la estación más cercana
