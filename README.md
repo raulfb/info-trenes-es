@@ -1,19 +1,41 @@
-# Pantallas Estaciones ADIF 🚂 🖥️
+# Info Trenes 🚂 🖥️
 
-Un configurador no oficial para el sistema de información a viajeros (SIV) de las estaciones de ADIF.
+Configurador no oficial de las pantallas de salidas y llegadas de las estaciones españolas, en tiempo real.
+
+> Este proyecto es un fork de [pantallas-estaciones](https://github.com/mariomnts/pantallas-estaciones), creado por [Mario Montes](https://github.com/mariomnts). Todo el mérito del trabajo original es suyo.
 
 ![Website](/public/card.png)
 
 ## 🚀 Demo
 
-**Link al proyecto**: [https://pantallas-estaciones.vercel.app/](https://pantallas-estaciones.vercel.app/)
+_Próximamente._
+
+## 📡 De dónde salen los datos
+
+Este proyecto no genera ni almacena datos de trenes. Todo se obtiene en tiempo real de los servicios públicos del sistema de información a viajeros (SIV) de ADIF:
+
+- **Visor de pantallas**: la previsualización carga el visor web de ADIF (`info.adif.es/assets/gravita/gravita.html`) con los parámetros elegidos en el configurador: estación, vista, idioma, filtros, etc.
+- **Datos en vivo**: se abre una conexión SignalR (WebSocket) con `info.adif.es/InfoStation` para recibir el estado de la estación en formato JSON.
+- **Listado de estaciones**: `src/constants/stations.ts` contiene los códigos de estación de ADIF (5 dígitos). Ejemplos: Madrid Chamartín `17000`, Barcelona Sants `71801`, Santiago de Compostela `31400`.
+
+Solo funcionan las estaciones gestionadas por ADIF que tienen el nuevo sistema de pantallas desplegado. El listado incluye también estaciones extranjeras (Portugal, Francia…) porque se usan como destino en los filtros, pero no tienen pantalla propia.
+
+## 🗺️ Hoja de ruta
+
+- [ ] Mostrar solo estaciones españolas en el buscador principal
+- [ ] Mensaje claro cuando una estación no tiene pantalla disponible
+- [ ] Corregir erratas en el listado de estaciones
+- [ ] Estaciones favoritas y recientes
+- [ ] Sugerir la estación más cercana
+- [ ] Script para comprobar qué estaciones tienen pantalla
 
 ## 🛠️ Tecnologías
 
-- **Vue 3** - Framework principal
-- **Vite** - Bundler y herramientas de desarrollo
-- **Tailwind CSS** - Estilos y diseño
-- **Vercel** - Despliegue y hosting
+- **Vue 3**: framework principal
+- **Vite**: bundler y herramientas de desarrollo
+- **Tailwind CSS**: estilos y diseño
+- **SignalR**: conexión en tiempo real con los datos de ADIF
+- **Vercel**: despliegue y hosting
 
 ## 🔧 Desarrollo
 
@@ -21,7 +43,8 @@ Un configurador no oficial para el sistema de información a viajeros (SIV) de l
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/mariomnts/pantallas-estaciones.git
+git clone https://github.com/TU_USUARIO/info-trenes.git
+cd info-trenes
 
 # Instalar dependencias
 npm install
@@ -30,14 +53,31 @@ npm install
 npm run dev
 ```
 
-> ADIF está bloqueando que su sitio se pueda cargar a través de iframes diferentes a su dominio por lo que para probar este sitio hay que abrirlo en un navegador que deshabilite esta restricción (por ejemplo con `--disable-web-security` en Chrome) o usar una extensión que permita cargar iframes de otros dominios.
+### Limitación del iframe
 
-## 📝 Nota Legal
+ADIF bloquea que su visor se cargue en iframes de otros dominios, así que en local la previsualización aparecerá vacía. Para probarla hay dos opciones:
 
-Este proyecto es **no oficial** y **no está afiliado con ADIF**. Se ha creado con propósito educacional para demostrar las capacidades del sistema de información a viajeros. La previsualización incluida muestra contenido servido directamente por ADIF, esta web solo permite configurar los parámetros de visualización. Marca, logotipos y datos mostrados en el panel son propiedad de ADIF.
+- Abrir Chrome con la seguridad web desactivada, usando un perfil aparte:
 
-Para distribución o uso comercial, se debe obtener permiso por parte del autor.
+  ```bash
+  google-chrome --disable-web-security --user-data-dir=/tmp/chrome-dev
+  ```
 
-## 👨‍💻 Autor
+- Usar una extensión que permita cargar iframes de otros dominios.
 
-**Mario Montes** - [@mariomnts](https://x.com/mariomnts)
+> ⚠️ Usa ese perfil de Chrome solo para desarrollar, nunca para navegar con normalidad.
+
+## 📝 Nota legal
+
+Este proyecto es **no oficial** y **no está afiliado con ADIF ni con Renfe**. Tiene un propósito educativo. La previsualización muestra contenido servido directamente por ADIF; esta web solo permite configurar los parámetros de visualización. Marcas, logotipos y datos mostrados en el panel son propiedad de ADIF.
+
+El proyecto depende de servicios de ADIF no documentados, que pueden cambiar o dejar de funcionar en cualquier momento.
+
+## 👨‍💻 Créditos
+
+- **Proyecto original**: Mario Montes ([@mariomnts](https://x.com/mariomnts)), [pantallas-estaciones](https://github.com/mariomnts/pantallas-estaciones)
+- **Fork**: Raul ([@raulfb](https://github.com/raulfb))
+
+## 📄 Licencia
+
+Distribuido bajo licencia [GPL-3.0](LICENSE), la misma que el proyecto original.
