@@ -75,6 +75,8 @@ import { ref, computed } from 'vue'
 import SearchIcon from './icons/SearchIcon.vue'
 import ClearIcon from './icons/ClearIcon.vue'
 import { Stations, PopularStations } from '../constants'
+// Solo estaciones españolas: las extranjeras no tienen pantalla de ADIF
+const SelectableStations = Stations.filter((s) => s.location?.country === 'España')
 
 const props = defineProps({
   modelValue: String,
@@ -103,7 +105,7 @@ onMounted(() => {
 })
 
 const filteredStations = computed(() => {
-  if (!searchQuery.value) return Stations
+  if (!searchQuery.value) return SelectableStations
 
   // Normalize the search query: remove accents, convert to lowercase, and trim whitespace
   const normalizedQuery = searchQuery.value
@@ -113,7 +115,7 @@ const filteredStations = computed(() => {
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, '')
 
-  return Stations.filter((station) => {
+  return SelectableStations.filter((station) => {
     // Only process if station and station.name exist
     if (!station?.name) return false
 

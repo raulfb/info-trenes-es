@@ -76,7 +76,7 @@ El proyecto depende de servicios de ADIF no documentados, que pueden cambiar o d
 ## 👨‍💻 Créditos
 
 - **Proyecto original**: Mario Montes ([@mariomnts](https://x.com/mariomnts)), [pantallas-estaciones](https://github.com/mariomnts/pantallas-estaciones)
-- **Fork**: Raul ([@raulfb](https://github.com/raulfb))
+- **Fork**: Raul ([@TU_USUARIO](https://github.com/raulfb))
 
 ## 📄 Licencia
 
